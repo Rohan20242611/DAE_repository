@@ -48,8 +48,8 @@ def main():
 
 
    #Start the loop
-   # for currentFeature in allFeatures:
-   #     print(currentFeature)
+   for currentFeature in allFeatures:
+       print(currentFeature)
 
 
 
