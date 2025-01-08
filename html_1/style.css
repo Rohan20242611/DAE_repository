@@ -1,0 +1,21 @@
+body{
+    background-color: purple;
+}
+h1 {
+    color: gold;
+}
+.button2{
+    background-color: darkorange;
+    width : 140px;
+    border-radius: 99%;
+}
+.randomBox{
+    width: 500px;
+    border: 20px orange;
+    padding: 20px;
+    margin: 15px;
+    background-color: black;
+}
+img {
+    width: 300px;
+}
