@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>My First Website</title>
-  
-     
 </head>
 
 <body>
     <header>
-        <h1>Westhill Web</h1>  <img src="Vikings.png" alt="Vikings Logo">
+        <h1>Westhill Web</h1>
+        <img src="Vikings.png" alt="Vikings Logo">
         <nav>
-            <li><a href="https://www.niche.com/k12/westhill-high-school-stamford-ct/">Reviews</a></li> 
+            <li><a href="https://www.niche.com/k12/westhill-high-school-stamford-ct/">Reviews</a></li>
         </nav>
     </header>
 
@@ -30,24 +29,35 @@
             </div>
         </div>
 
+        <!-- Review Section -->
+        <label for="reviewInput">Reviews (Integer Only): </label>
+        <input type="number" id="reviewInput" placeholder="Enter a rating (1-10)" min="1" max="10" />
+        <button onclick="submitReview()">Submit Review</button>
+        <div id="averageReviewSection">
+            <p>Average Review: <span id="averageReview">No reviews yet</span></p>
+        </div>
+        <button onclick="clearReviews()">Clear Reviews</button>
+
+        <!-- Chatbot Section -->
         <div class="chat-container">
             <div id="chatbox">
                 <p class="bot-message">Hello! How can I assist you today?</p>
             </div>
-            <input type="text" id="userInput" placeholder="Type your message...">
+            <label for="chatInput">Type your message: </label>
+            <input type="text" id="chatInput" placeholder="Type your message..." />
             <button onclick="sendMessage()">Send</button>
         </div>
 
         <div class="button2">
             <a href="Start.html">Go back!</a>
         </div>
-
-    
     </main>
 
     <footer>
         <p>&copy; 2025 Westhill Web. All rights reserved.</p>
     </footer>
+
+    <script src="westhill.js"></script>
 </body>
 
 </html>
