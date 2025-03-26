@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-wrapper">
+                <!-- Login Form -->
+                <form id="login-form" class="form active">
+                    <h2>Login</h2>
+                    <div class="input-group">
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            placeholder="Email" 
+                            required
+                        >
+                        <span class="icon">✉️</span>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="login-password" 
+                            placeholder="Password" 
+                            required
+                        >
+                        <span class="icon">🔒</span>
+                    </div>
+                    <button type="submit" id="login-button">
+                        Login
+                    </button>
+                    <div class="social-login">
+                        <button type="button" id="google-login" class="google-btn">
+                            Login with Google
+                        </button>
+                    </div>
+                    <p class="switch-form">
+                        Don't have an account? 
+                        <a href="#" id="signup-link">Sign Up</a>
+                    </p>
+                    <a href="#" id="forgot-password">Forgot Password?</a>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="form">
+                    <h2>Create Account</h2>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="signup-name" 
+                            placeholder="Full Name" 
+                            required
+                        >
+                        <span class="icon">👤</span>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="email" 
+                            id="signup-email" 
+                            placeholder="Email" 
+                            required
+                        >
+                        <span class="icon">✉️</span>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="signup-password" 
+                            placeholder="Password" 
+                            required
+                        >
+                        <span class="icon">🔒</span>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="confirm-password" 
+                            placeholder="Confirm Password" 
+                            required
+                        >
+                        <span class="icon">🔒</span>
+                    </div>
+                    <button type="submit" id="signup-button">
+                        Sign Up
+                    </button>
+                    <p class="switch-form">
+                        Already have an account? 
+                        <a href="#" id="login-link">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <!-- Fireball.js -->
+    <script src="https://cdn.jsdelivr.net/npm/fireball.js/dist/fireball.min.js"></script>
+    
+    <!-- Main Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>

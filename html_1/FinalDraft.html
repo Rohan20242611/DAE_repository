@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TheHistoryFacts APP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="Main Banner">
+        <h1>THE HISTORY FACTS APP</h1>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-container">
+        <h2>History Quiz</h2>
+        <div id="quizQuestion"></div>
+        <div id="quizOptions"></div>
+        <button id="nextQuestionBtn">Next Question</button>
+        <div id="quizFeedback"></div>
+    </div>
+    
+    <div class="button1">
+        <button class="dropButton">Quizzes</button>
+        <div class="dropDown-stuff">
+            <ul>
+                <li><a href="#">Quizzes 1</a></li>
+                <li><a href="#">Quizzes 2</a></li>
+                <li><a href="#">Quizzes 3</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Quiz JavaScript code -->
+    <script>
+        const quizQuestions = [
+            {
+                question: "Who was the first President of the United States?",
+                options: ["George Washington", "Thomas Jefferson", "Abraham Lincoln", "John Adams"],
+                answer: "George Washington"
+            },
+            {
+                question: "In what year did the Titanic sink?",
+                options: ["1912", "1905", "1920", "1898"],
+                answer: "1912"
+            },
+        ];
+
+        const quizQuestionElement = document.getElementById("quizQuestion");
+        const quizOptionsElement = document.getElementById("quizOptions");
+        const nextQuestionButton = document.getElementById("nextQuestionBtn");
+        const quizFeedbackElement = document.getElementById("quizFeedback");
+
+        let currentQuestionIndex = 0;
+
+        function displayQuestion() {
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            quizQuestionElement.textContent = currentQuestion.question;
+
+            quizOptionsElement.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const optionElement = document.createElement("button");
+                optionElement.textContent = option;
+                optionElement.classList.add("quiz-option");
+                optionElement.addEventListener("click", () => checkAnswer(option));
+                quizOptionsElement.appendChild(optionElement);
+            });
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const correctAnswer = quizQuestions[currentQuestionIndex].answer;
+            if (selectedAnswer === correctAnswer) {
+                quizFeedbackElement.textContent = "Correct!";
+            } else {
+                quizFeedbackElement.textContent = `Wrong! The correct answer is: ${correctAnswer}`;
+            }
+        }
+
+        function nextQuestion() {
+            console.log("Next Question clicked"); // Log to ensure this is being triggered
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                displayQuestion();
+                quizFeedbackElement.textContent = '';  // Clear feedback
+            } else {
+                quizFeedbackElement.textContent = "You've completed the quiz!";
+            }
+        }
+
+        // Adding console logging to confirm the button click event is being triggered
+        nextQuestionButton.addEventListener("click", function() {
+            console.log("Next Question Button Clicked"); // Check if this logs in console
+            nextQuestion();
+        });
+
+        // Initially display the first question
+        displayQuestion();
+    </script>
+</body>
+</html>

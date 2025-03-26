@@ -61,3 +61,280 @@
 </body>
 
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .chat-header h1 {
+            color: #4285f4;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .chat-area {
+            flex-grow: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 75%;
+            word-wrap: break-word;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            margin-left: auto;
+            text-align: right;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            background-color: #f1f1f1;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #user-input {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s;
+        }
+        
+        #user-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        
+        #send-btn {
+            padding: 12px 24px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        #send-btn:hover {
+            background-color: #356ac3;
+        }
+        
+        .thinking {
+            font-style: italic;
+            color: #888;
+            margin-left: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dot-typing {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #888;
+            margin-right: 3px;
+            animation: dot-typing 1.4s infinite linear;
+        }
+        
+        .dot-typing:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .dot-typing:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dot-typing {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <h1>AI Chatbot</h1>
+            <p>Powered by Google Gemini</p>
+        </div>
+        
+        <div class="chat-area" id="chat-area">
+            <div class="message bot-message">Hi there! How can I help you today?</div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatArea = document.getElementById('chat-area');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        // Backend API URL - update this to your server address
+        const API_URL = 'http://localhost:3000/api/chat';
+        
+        // Add message to chat
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Show thinking indicator
+        function showThinking() {
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.classList.add('thinking');
+            thinkingDiv.id = 'thinking-indicator';
+            
+            // Add animated dots
+            const dotContainer = document.createElement('div');
+            dotContainer.style.display = 'flex';
+            dotContainer.style.marginRight = '8px';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot-typing');
+                dotContainer.appendChild(dot);
+            }
+            
+            thinkingDiv.appendChild(dotContainer);
+            thinkingDiv.appendChild(document.createTextNode('AI is thinking'));
+            
+            chatArea.appendChild(thinkingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Hide thinking indicator
+        function hideThinking() {
+            const indicator = document.getElementById('thinking-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+        
+        // Send message to backend
+        async function sendToBackend(message) {
+            try {
+                showThinking();
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                hideThinking();
+                
+                if (data.error) {
+                    addMessage(`Error: ${data.error}`, false);
+                    return;
+                }
+                
+                addMessage(data.response, false);
+                
+            } catch (error) {
+                hideThinking();
+                addMessage('Error connecting to the server. Please try again later.', false);
+                console.error('Error:', error);
+            }
+        }
+        
+        // Send message when button clicked
+        sendBtn.addEventListener('click', () => {
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                userInput.value = '';
+                sendToBackend(message);
+            }
+        });
+        
+        // Send message on Enter key
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const message = userInput.value.trim();
+                if (message) {
+                    addMessage(message, true);
+                    userInput.value = '';
+                    sendToBackend(message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
