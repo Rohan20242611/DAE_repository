@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3367d6;
+        }
+        
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .success {
+            color: #4caf50;
+        }
+        
+        .error {
+            color: #f44336;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Account</h1>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <div id="message" class="message"></div>
+        <div class="login-link">
+            Already have an account? <a href="login.html">Log In</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.6.10/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyB8ayI3hG5HBRclj5_JEYV4fbjpPmSqIp8",
+  authDomain: "fir-1-753ad.firebaseapp.com",
+  projectId: "fir-1-753ad",
+  storageBucket: "fir-1-753ad.firebasestorage.app",
+  messagingSenderId: "83188385447",
+  appId: "1:83188385447:web:1c160928090f72902cfd82",
+  measurementId: "G-NWQNR5SP3P"
+};
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Get the signup form and message elements
+        const signupForm = document.getElementById('signupForm');
+        const messageDiv = document.getElementById('message');
+        
+        // Add form submit event listener
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get user inputs
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Clear previous messages
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                messageDiv.textContent = 'Passwords do not match';
+                messageDiv.classList.add('error');
+                return;
+            }
+            
+            // Sign up with email and password
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Success message
+                    messageDiv.textContent = 'Account created successfully!';
+                    messageDiv.classList.add('success');
+                    
+                    // Redirect to login page after a delay
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                })
+                .catch((error) => {
+                    // Display error message
+                    messageDiv.textContent = error.message;
+                    messageDiv.classList.add('error');
+                });
+        });
+    </script>
+</body>
+</html>

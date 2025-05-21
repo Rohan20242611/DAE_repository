@@ -1,24 +1,24 @@
-// firebase.js
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-// Replace with your Firebase project's config
+// Your web app's Firebase configuration
+// TODO: Replace with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyB8ayI3hG5HBRclj5_JEYV4fbjpPmSqIp8",
+  authDomain: "fir-1-753ad.firebaseapp.com",
+  projectId: "fir-1-753ad",
+  storageBucket: "fir-1-753ad.firebasestorage.app",
+  messagingSenderId: "83188385447",
+  appId: "1:83188385447:web:1c160928090f72902cfd82",
+  measurementId: "G-NWQNR5SP3P"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase services
 const auth = getAuth(app);
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 
-export { auth, firestore, signInWithEmailAndPassword, doc, setDoc, serverTimestamp };
+// Export the Firebase services so they can be used in other files
+export { app, auth, db };
