@@ -3,133 +3,539 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Stock Dashboard</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
         }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
         h1 {
-            color: #333;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        form {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+
+        .stocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .stock-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+
+        .stock-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stock-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4aa, #00d4ff);
+        }
+
+        .stock-symbol {
+            font-size: 1.8em;
             font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
         }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+
+        .stock-name {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.9em;
         }
-        button {
-            padding: 8px 15px;
-            background-color: #4CAF50;
+
+        .stock-price {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .stock-change {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .positive {
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .negative {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .update-time {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .refresh-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #00d4aa, #00d4ff);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 25px;
+            font-size: 1em;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
         }
-        button:hover {
-            background-color: #45a049;
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);
         }
-        .clear-btn {
-            background-color: #f44336;
-            margin-left: 10px;
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
         }
-        .clear-btn:hover {
-            background-color: #d32f2f;
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .updating {
+            animation: pulse 1s infinite;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .edit-btn {
-            background-color: #2196F3;
-        }
-        .edit-btn:hover {
-            background-color: #0b7dda;
-        }
-        .delete-btn {
-            background-color: #f44336;
-        }
-        .delete-btn:hover {
-            background-color: #d32f2f;
-        }
-        #status {
+
+        .api-status {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
             padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
         }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
+
+        .status-success {
+            background: rgba(39, 174, 96, 0.2);
         }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #logoutBtn {
-            background-color: #607D8B;
-        }
-        #logoutBtn:hover {
-            background-color: #455A64;
+
+        .status-error {
+            background: rgba(231, 76, 60, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Dashboard</h1>
-        <button id="logoutBtn">Logout</button>
-    </div>
-    
-    <div id="status"></div>
-    
-    <h2>Add New Item</h2>
-    <form id="itemForm">
-        <div class="form-group">
-            <label for="itemName">Item Name</label>
-            <input type="text" id="itemName" required>
+    <div class="dashboard">
+        <h1>📈 Stock Dashboard</h1>
+        
+        <div class="api-status" id="apiStatus">
+            🔄 Initializing Polygon.io connection...
         </div>
-        <div class="form-group">
-            <label for="itemDescription">Description</label>
-            <textarea id="itemDescription" rows="3"></textarea>
+        
+        <div class="stocks-grid" id="stocksGrid">
+            <!-- Stock boxes will be generated here -->
         </div>
-        <button type="submit">Add Item</button>
-    </form>
-    
-    <h2>Your Items</h2>
-    <div id="itemsList">
-        <p>Loading items...</p>
+        
+        <button class="refresh-btn" id="refreshBtn" onclick="updateStocks()">
+            🔄 Refresh Prices
+        </button>
+        
+        <div class="update-time" id="updateTime">
+            Last updated: Never
+        </div>
     </div>
-    
-    <!-- Import the Firebase SDK and your scripts -->
-    <script type="module" src="./dashboard.js"></script>
+
+    <script>
+        // Stock symbols to track
+        const stockSymbols = [
+            { symbol: 'AAPL', name: 'Apple Inc.' },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+            { symbol: 'MSFT', name: 'Microsoft Corporation' },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+            { symbol: 'TSLA', name: 'Tesla Inc.' },
+            { symbol: 'NVDA', name: 'NVIDIA Corporation' },
+            { symbol: 'META', name: 'Meta Platforms Inc.' },
+            { symbol: 'NFLX', name: 'Netflix Inc.' }
+        ];
+
+        // Replace with your actual Polygon.io API key
+        const POLYGON_API_KEY = 'u5dKvyJp8FpMJ7Azm2RV8lwIyOnQXewk';
+        
+        let currentPrices = {};
+        let previousPrices = {};
+
+        // Get current date in YYYY-MM-DD format
+        function getCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Get previous trading day (accounting for weekends)
+        function getPreviousDate() {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            
+            // If it's Monday, go back to Friday
+            if (today.getDay() === 1) {
+                yesterday.setDate(today.getDate() - 3);
+            }
+            // If it's Sunday, go back to Friday
+            else if (today.getDay() === 0) {
+                yesterday.setDate(today.getDate() - 2);
+            }
+            
+            const year = yesterday.getFullYear();
+            const month = String(yesterday.getMonth() + 1).padStart(2, '0');
+            const day = String(yesterday.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Test Polygon.io API connection
+        async function testPolygonAPI() {
+            try {
+                console.log('🔍 Testing Polygon.io API connection...');
+                const testUrl = `https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apikey=${POLYGON_API_KEY}`;
+                
+                const response = await fetch(testUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Polygon.io API test successful:', data);
+                    
+                    if (data.status === 'OK' && data.results && data.results.length > 0) {
+                        return { success: true, data: data };
+                    } else {
+                        console.warn('⚠️ API returned unexpected format:', data);
+                        return { success: false, error: 'Unexpected API response format' };
+                    }
+                } else {
+                    console.error('❌ API test failed:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('Error details:', errorText);
+                    return { success: false, error: `HTTP ${response.status}: ${response.statusText}` };
+                }
+            } catch (error) {
+                console.error('💥 API test error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Fetch real-time stock data from Polygon.io
+        async function fetchPolygonStockData(symbol) {
+            try {
+                console.log(`📈 Fetching data for ${symbol}...`);
+                
+                // Get previous day's close data
+                const prevUrl = `https://api.polygon.io/v2/aggs/ticker/${symbol}/prev?adjusted=true&apikey=${POLYGON_API_KEY}`;
+                
+                const response = await fetch(prevUrl);
+                
+                if (!response.ok) {
+                    console.error(`❌ API error for ${symbol}:`, response.status, response.statusText);
+                    return null;
+                }
+                
+                const data = await response.json();
+                console.log(`📊 API Response for ${symbol}:`, data);
+                
+                if (data.status === 'OK' && data.results && data.results.length > 0) {
+                    const result = data.results[0];
+                    
+                    // Calculate change from previous close
+                    const currentPrice = result.c; // close price
+                    const openPrice = result.o; // open price
+                    const change = currentPrice - openPrice;
+                    const changePercent = (change / openPrice) * 100;
+                    
+                    return {
+                        price: currentPrice,
+                        change: change,
+                        changePercent: changePercent,
+                        high: result.h,
+                        low: result.l,
+                        volume: result.v,
+                        open: result.o,
+                        timestamp: result.t
+                    };
+                } else {
+                    console.warn(`⚠️ No data available for ${symbol}:`, data);
+                    return null;
+                }
+            } catch (error) {
+                console.error(`💥 Error fetching data for ${symbol}:`, error);
+                return null;
+            }
+        }
+
+        // Try to get real-time data, fallback to previous day if needed
+        async function fetchStockDataWithFallback(symbol) {
+            // First try to get real-time data
+            try {
+                const realtimeUrl = `https://api.polygon.io/v1/last/stocks/${symbol}?apikey=${POLYGON_API_KEY}`;
+                const realtimeResponse = await fetch(realtimeUrl);
+                
+                if (realtimeResponse.ok) {
+                    const realtimeData = await realtimeResponse.json();
+                    if (realtimeData.status === 'OK' && realtimeData.last) {
+                        console.log(`⚡ Real-time data for ${symbol}:`, realtimeData);
+                        
+                        // Get previous close for comparison
+                        const prevData = await fetchPolygonStockData(symbol);
+                        if (prevData) {
+                            const currentPrice = realtimeData.last.price;
+                            const previousClose = prevData.price;
+                            const change = currentPrice - previousClose;
+                            const changePercent = (change / previousClose) * 100;
+                            
+                            return {
+                                price: currentPrice,
+                                change: change,
+                                changePercent: changePercent,
+                                high: prevData.high,
+                                low: prevData.low,
+                                volume: prevData.volume,
+                                isRealTime: true
+                            };
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log(`⚠️ Real-time data not available for ${symbol}, using previous day data`);
+            }
+            
+            // Fallback to previous day data
+            return await fetchPolygonStockData(symbol);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // Generate fallback demo data if API fails
+        function generateDemoData(stockData) {
+            const basePrice = {
+                'AAPL': 175, 'GOOGL': 125, 'MSFT': 350, 'AMZN': 140,
+                'TSLA': 200, 'NVDA': 800, 'META': 300, 'NFLX': 1200,
+            };
+            
+            const price = basePrice[stockData.symbol] || 100;
+            const change = (Math.random() - 0.5) * 10;
+            const changePercent = (change / price) * 100;
+            
+            return {
+                price: price + change,
+                change: change,
+                changePercent: changePercent,
+                high: price + Math.abs(change) + 1,
+                low: price - Math.abs(change) - 1,
+                volume: Math.floor(Math.random() * 10000000),
+                isDemo: true
+            };
+        }
+
+        // Create stock box with real or demo data
+        async function createStockBox(stockData) {
+            let stockInfo = await fetchStockDataWithFallback(stockData.symbol);
+            
+            if (!stockInfo) {
+                stockInfo = generateDemoData(stockData);
+            }
+            
+            currentPrices[stockData.symbol] = stockInfo.price;
+
+            const isPositive = stockInfo.change >= 0;
+            const changeClass = isPositive ? 'positive' : 'negative';
+            const changeSymbol = isPositive ? '+' : '';
+
+            let statusBadge = '';
+            if (stockInfo.isRealTime) {
+                statusBadge = '<div style="margin-top: 10px; font-size: 0.8em; color: #27ae60;">🟢 Real-time</div>';
+            } else if (stockInfo.isDemo) {
+                statusBadge = '<div style="margin-top: 10px; font-size: 0.8em; color: #e74c3c;">🔴 Demo Data</div>';
+            } else {
+                statusBadge = '<div style="margin-top: 10px; font-size: 0.8em; color: #f39c12;">🟡 Previous Close</div>';
+            }
+
+            const extraInfo = `<div style="margin-top: 10px; font-size: 0.8em; color: #666;">
+                H: ${formatCurrency(stockInfo.high)} | L: ${formatCurrency(stockInfo.low)} | Vol: ${formatNumber(stockInfo.volume)}
+            </div>${statusBadge}`;
+
+            return `
+                <div class="stock-box">
+                    <div class="stock-symbol">${stockData.symbol}</div>
+                    <div class="stock-name">${stockData.name}</div>
+                    <div class="stock-price">${formatCurrency(stockInfo.price)}</div>
+                    <div class="stock-change ${changeClass}">
+                        ${changeSymbol}${formatCurrency(Math.abs(stockInfo.change))} (${changeSymbol}${Math.abs(stockInfo.changePercent).toFixed(2)}%)
+                    </div>
+                    ${extraInfo}
+                </div>
+            `;
+        }
+
+        async function updateStocks() {
+            const grid = document.getElementById('stocksGrid');
+            const btn = document.getElementById('refreshBtn');
+            const updateTime = document.getElementById('updateTime');
+            const apiStatus = document.getElementById('apiStatus');
+            
+            // Add loading state
+            grid.classList.add('updating');
+            btn.classList.add('loading');
+            btn.textContent = '🔄 Fetching Data...';
+            apiStatus.textContent = '🔄 Loading stock data...';
+            apiStatus.className = 'api-status';
+            
+            try {
+                const stockBoxes = [];
+                let successCount = 0;
+                
+                for (let i = 0; i < stockSymbols.length; i++) {
+                    const stock = stockSymbols[i];
+                    console.log(`Processing ${stock.symbol} (${i + 1}/${stockSymbols.length})`);
+                    
+                    btn.textContent = `🔄 Loading ${stock.symbol}... (${i + 1}/${stockSymbols.length})`;
+                    
+                    const boxHtml = await createStockBox(stock);
+                    stockBoxes.push(boxHtml);
+                    
+                    if (currentPrices[stock.symbol]) {
+                        successCount++;
+                    }
+                    
+                    // Small delay to prevent overwhelming the API
+                    if (i < stockSymbols.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+                
+                // Update the grid with all stock boxes
+                grid.innerHTML = stockBoxes.join('');
+                
+                // Update status
+                if (successCount === stockSymbols.length) {
+                    apiStatus.textContent = '✅ All data loaded successfully from Polygon.io';
+                    apiStatus.className = 'api-status status-success';
+                } else if (successCount > 0) {
+                    apiStatus.textContent = `⚠️ ${successCount}/${stockSymbols.length} stocks loaded successfully`;
+                    apiStatus.className = 'api-status';
+                } else {
+                    apiStatus.textContent = '❌ Using demo data - API connection failed';
+                    apiStatus.className = 'api-status status-error';
+                }
+                
+                // Update timestamp
+                updateTime.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                
+            } catch (error) {
+                console.error('Error updating stocks:', error);
+                updateTime.textContent = `Error updating data: ${error.message}`;
+                apiStatus.textContent = `❌ Error: ${error.message}`;
+                apiStatus.className = 'api-status status-error';
+            } finally {
+                // Remove loading state
+                grid.classList.remove('updating');
+                btn.classList.remove('loading');
+                btn.textContent = '🔄 Refresh Prices';
+            }
+        }
+
+        // Auto-refresh every 2 minutes
+        setInterval(updateStocks, 120000);
+
+        // Initialize the dashboard
+        async function initialize() {
+            console.log('🚀 Initializing Stock Dashboard with Polygon.io...');
+            console.log('🔑 Using API Key:', POLYGON_API_KEY.substring(0, 8) + '...');
+            
+            const apiStatus = document.getElementById('apiStatus');
+            
+            // Test API connection
+            const apiTest = await testPolygonAPI();
+            
+            if (apiTest.success) {
+                console.log('✅ Polygon.io API connection successful!');
+                apiStatus.textContent = '✅ Connected to Polygon.io API';
+                apiStatus.className = 'api-status status-success';
+            } else {
+                console.error('❌ Polygon.io API connection failed:', apiTest.error);
+                apiStatus.textContent = `⚠️ API connection failed: ${apiTest.error}`;
+                apiStatus.className = 'api-status status-error';
+            }
+            
+            // Load initial data
+            await updateStocks();
+        }
+
+        // Start the app
+        initialize();
+
+        // Add some visual feedback for real-time feel
+        setInterval(() => {
+            const boxes = document.querySelectorAll('.stock-box');
+            boxes.forEach(box => {
+                if (Math.random() > 0.8) {
+                    box.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        box.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        }, 10000);
+    </script>
 </body>
 </html>
